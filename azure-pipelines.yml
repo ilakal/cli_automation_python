@@ -1,0 +1,179 @@
+trigger:
+  - main
+
+pr:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  pythonVersion: '3.12'
+  PIP_CACHE_DIR: $(Pipeline.Workspace)/.pip
+
+stages:
+  - stage: Setup
+    jobs:
+      - job: InstallDependencies
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+            displayName: 'Use Python $(pythonVersion)'
+
+          - task: Cache@2
+            inputs:
+              key: 'pip | "$(Agent.OS)" | requirements.txt'
+              restoreKeys: |
+                pip | "$(Agent.OS)"
+              path: $(PIP_CACHE_DIR)
+            displayName: Cache pip packages
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt
+            displayName: 'Install dependencies'
+
+  - stage: CodeQuality
+    dependsOn: Setup
+    jobs:
+      - job: Lint
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+
+          - task: Cache@2
+            inputs:
+              key: 'pip | "$(Agent.OS)" | requirements.txt'
+              restoreKeys: |
+                pip | "$(Agent.OS)"
+              path: $(PIP_CACHE_DIR)
+
+          - script: |
+              pip install -r requirements.txt
+              flake8 framework/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+            displayName: 'Run flake8 linting'
+            continueOnError: true
+
+          - script: |
+              black --check framework/ tests/ || true
+            displayName: 'Check code formatting'
+            continueOnError: true
+
+  - stage: TestQA
+    dependsOn: Setup
+    jobs:
+      - job: SmokeTests
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+
+          - task: Cache@2
+            inputs:
+              key: 'pip | "$(Agent.OS)" | requirements.txt'
+              restoreKeys: |
+                pip | "$(Agent.OS)"
+              path: $(PIP_CACHE_DIR)
+
+          - script: |
+              pip install -r requirements.txt
+              mkdir -p reports/allure-results reports/junit
+            displayName: 'Setup environment'
+
+          - script: |
+              pytest tests/smoke/ --env=qa -v \
+                --junit-xml=reports/junit/smoke-results.xml \
+                --allure-dir=reports/allure-results
+            displayName: 'Run smoke tests'
+            continueOnError: true
+
+      - job: RegressionTests
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+
+          - task: Cache@2
+            inputs:
+              key: 'pip | "$(Agent.OS)" | requirements.txt'
+              restoreKeys: |
+                pip | "$(Agent.OS)"
+              path: $(PIP_CACHE_DIR)
+
+          - script: |
+              pip install -r requirements.txt
+              mkdir -p reports/allure-results reports/junit
+            displayName: 'Setup environment'
+
+          - script: |
+              pytest tests/regression/ --env=qa -n auto -v \
+                --junit-xml=reports/junit/regression-results.xml \
+                --allure-dir=reports/allure-results
+            displayName: 'Run regression tests (parallel)'
+            continueOnError: true
+
+  - stage: FrameworkTests
+    dependsOn: Setup
+    jobs:
+      - job: UnitTests
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+
+          - task: Cache@2
+            inputs:
+              key: 'pip | "$(Agent.OS)" | requirements.txt'
+              restoreKeys: |
+                pip | "$(Agent.OS)"
+              path: $(PIP_CACHE_DIR)
+
+          - script: |
+              pip install -r requirements.txt
+              mkdir -p reports/allure-results reports/junit
+            displayName: 'Setup environment'
+
+          - script: |
+              pytest tests/framework/ -v --cov=framework --cov-report=xml \
+                --junit-xml=reports/junit/framework-results.xml \
+                --allure-dir=reports/allure-results
+            displayName: 'Run framework unit tests'
+            continueOnError: true
+
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
+            displayName: 'Publish code coverage'
+            continueOnError: true
+
+  - stage: Reporting
+    dependsOn: [TestQA, FrameworkTests]
+    condition: always()
+    jobs:
+      - job: PublishReports
+        steps:
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: 'reports/junit/*.xml'
+              mergeTestResults: true
+              failTaskOnFailedTests: false
+            displayName: 'Publish test results'
+            continueOnError: true
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: 'reports'
+              artifactName: 'test-reports'
+            displayName: 'Publish test artifacts'
+            continueOnError: true
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: 'logs'
+              artifactName: 'test-logs'
+            displayName: 'Publish test logs'
+            continueOnError: true
