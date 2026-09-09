@@ -1,0 +1,29 @@
+"""Constants used throughout the framework."""
+
+# Default timeouts
+DEFAULT_COMMAND_TIMEOUT = 30
+DEFAULT_RETRIES = 3
+DEFAULT_RETRY_DELAY = 2.0
+
+# Environment names
+ENVIRONMENT_QA = "qa"
+ENVIRONMENT_STAGE = "stage"
+ENVIRONMENT_PROD = "prod"
+
+AVAILABLE_ENVIRONMENTS = [
+    ENVIRONMENT_QA,
+    ENVIRONMENT_STAGE,
+    ENVIRONMENT_PROD,
+]
+
+# Logging
+LOG_LEVEL_DEBUG = "DEBUG"
+LOG_LEVEL_INFO = "INFO"
+LOG_LEVEL_WARNING = "WARNING"
+LOG_LEVEL_ERROR = "ERROR"
+
+# File formats
+FILE_FORMAT_YAML = ".yaml"
+FILE_FORMAT_JSON = ".json"
+FILE_FORMAT_CSV = ".csv"
+FILE_FORMAT_EXCEL = ".xlsx"
