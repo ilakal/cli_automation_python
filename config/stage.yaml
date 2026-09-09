@@ -1,0 +1,15 @@
+environment: stage
+servers:
+  server1:
+    host: stage-server-01.example.com
+    port: 22
+    username: stage_user
+  server2:
+    host: stage-server-02.example.com
+    port: 22
+    username: stage_user
+database:
+  host: stage-db.example.com
+  port: 5432
+  name: stage_testdb
+  username: stage_user

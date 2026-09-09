@@ -1,0 +1,30 @@
+$schema: http://json-schema.org/draft-2020-12/schema
+title: Processes Schema
+description: Schema for process test data
+type: array
+items:
+  type: object
+  required:
+    - process_name
+    - status
+  properties:
+    process_name:
+      type: string
+      description: Process name
+      minLength: 1
+    pid:
+      type: integer
+      description: Process ID
+      minimum: 1
+    status:
+      type: string
+      description: Process status
+      enum:
+        - running
+        - stopped
+        - sleeping
+    memory_mb:
+      type: number
+      description: Memory usage in MB
+      minimum: 0
+  additionalProperties: false

@@ -1,0 +1,12 @@
+- command: ls -la /tmp
+  description: List files in /tmp directory
+  expected_exit_code: 0
+  timeout: 30
+- command: hostname -f
+  description: Get full hostname
+  expected_exit_code: 0
+  timeout: 10
+- command: systemctl status nginx
+  description: Check nginx service status
+  expected_exit_code: 0
+  timeout: 15

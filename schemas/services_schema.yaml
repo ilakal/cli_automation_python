@@ -1,0 +1,30 @@
+$schema: http://json-schema.org/draft-2020-12/schema
+title: Services Schema
+description: Schema for service test data
+type: array
+items:
+  type: object
+  required:
+    - name
+    - status
+  properties:
+    name:
+      type: string
+      description: Service name
+      minLength: 1
+    status:
+      type: string
+      description: Service status
+      enum:
+        - running
+        - stopped
+        - inactive
+    enabled:
+      type: boolean
+      description: Whether service is enabled at boot
+    port:
+      type: integer
+      description: Service port number
+      minimum: 1
+      maximum: 65535
+  additionalProperties: false

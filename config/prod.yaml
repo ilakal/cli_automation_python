@@ -1,0 +1,15 @@
+environment: prod
+servers:
+  server1:
+    host: prod-server-01.example.com
+    port: 22
+    username: prod_user
+  server2:
+    host: prod-server-02.example.com
+    port: 22
+    username: prod_user
+database:
+  host: prod-db.example.com
+  port: 5432
+  name: prod_testdb
+  username: prod_user

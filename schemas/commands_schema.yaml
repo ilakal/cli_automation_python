@@ -1,0 +1,26 @@
+$schema: http://json-schema.org/draft-2020-12/schema
+title: Commands Schema
+description: Schema for command test data
+type: array
+items:
+  type: object
+  required:
+    - command
+    - description
+  properties:
+    command:
+      type: string
+      description: Command to execute
+      minLength: 1
+    description:
+      type: string
+      description: Command description
+    expected_exit_code:
+      type: integer
+      description: Expected exit code
+      default: 0
+    timeout:
+      type: integer
+      description: Command timeout in seconds
+      minimum: 1
+  additionalProperties: false

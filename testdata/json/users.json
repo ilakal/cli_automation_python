@@ -1,0 +1,20 @@
+[
+  {
+    "username": "admin",
+    "email": "admin@example.com",
+    "role": "administrator",
+    "active": true
+  },
+  {
+    "username": "viewer_user",
+    "email": "viewer@example.com",
+    "role": "viewer",
+    "active": true
+  },
+  {
+    "username": "editor_user",
+    "email": "editor@example.com",
+    "role": "editor",
+    "active": true
+  }
+]

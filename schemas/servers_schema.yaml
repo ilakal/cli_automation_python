@@ -1,0 +1,33 @@
+$schema: http://json-schema.org/draft-2020-12/schema
+title: Servers Schema
+description: Schema for server test data
+type: array
+items:
+  type: object
+  required:
+    - hostname
+    - environment
+  properties:
+    hostname:
+      type: string
+      description: Server hostname
+      minLength: 1
+    environment:
+      type: string
+      description: Environment
+      enum:
+        - qa
+        - stage
+        - prod
+    os:
+      type: string
+      description: Operating system
+    cpu_cores:
+      type: integer
+      description: Number of CPU cores
+      minimum: 1
+    memory_gb:
+      type: integer
+      description: Memory in GB
+      minimum: 1
+  additionalProperties: false

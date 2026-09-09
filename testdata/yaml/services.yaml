@@ -1,0 +1,12 @@
+- name: nginx
+  status: running
+  enabled: true
+  port: 80
+- name: postgresql
+  status: running
+  enabled: true
+  port: 5432
+- name: redis
+  status: running
+  enabled: true
+  port: 6379

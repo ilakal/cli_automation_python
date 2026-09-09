@@ -1,0 +1,29 @@
+$schema: http://json-schema.org/draft-2020-12/schema
+title: Users Schema
+description: Schema for user test data
+type: array
+items:
+  type: object
+  required:
+    - username
+    - role
+  properties:
+    username:
+      type: string
+      description: User login name
+      minLength: 3
+    email:
+      type: string
+      description: User email
+      format: email
+    role:
+      type: string
+      description: User role
+      enum:
+        - administrator
+        - viewer
+        - editor
+    active:
+      type: boolean
+      description: Whether user is active
+  additionalProperties: false

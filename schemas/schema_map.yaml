@@ -1,0 +1,7 @@
+# Schema mapping for test data files
+# Maps data files to their validation schemas
+services.yaml: services_schema.yaml
+commands.yaml: commands_schema.yaml
+users.json: users_schema.yaml
+processes.csv: processes_schema.yaml
+servers.xlsx: servers_schema.yaml
